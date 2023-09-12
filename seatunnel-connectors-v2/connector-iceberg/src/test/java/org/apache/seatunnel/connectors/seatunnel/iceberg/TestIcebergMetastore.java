@@ -53,7 +53,11 @@ public class TestIcebergMetastore {
         HiveCatalog catalog =
                 (HiveCatalog)
                         new IcebergCatalogFactory(
-                                        "seatunnel", HIVE, "file://" + warehousePath, METASTORE_URI)
+                                        "seatunnel",
+                                        HIVE,
+                                        "file://" + warehousePath,
+                                        METASTORE_URI,
+                                        null)
                                 .create();
         catalog.createNamespace(Namespace.of("test_database"));
         Assertions.assertTrue(catalog.namespaceExists(Namespace.of("test_database")));

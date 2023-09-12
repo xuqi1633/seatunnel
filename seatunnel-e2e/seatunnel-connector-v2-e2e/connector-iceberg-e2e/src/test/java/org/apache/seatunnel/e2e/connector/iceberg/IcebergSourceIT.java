@@ -133,7 +133,9 @@ public class IcebergSourceIT extends TestSuiteBase implements TestResource {
     }
 
     private void initializeIcebergTable() {
-        CATALOG = new IcebergCatalogFactory(CATALOG_NAME, CATALOG_TYPE, WAREHOUSE, null).create();
+        CATALOG =
+                new IcebergCatalogFactory(CATALOG_NAME, CATALOG_TYPE, WAREHOUSE, null, null)
+                        .create();
         if (!CATALOG.tableExists(TABLE)) {
             CATALOG.createTable(TABLE, SCHEMA);
         }

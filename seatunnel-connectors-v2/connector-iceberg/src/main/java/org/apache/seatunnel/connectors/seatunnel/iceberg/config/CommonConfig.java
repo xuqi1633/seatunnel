@@ -27,6 +27,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 
+import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.IcebergCatalogType.ALLUXIO;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.IcebergCatalogType.HADOOP;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.IcebergCatalogType.HIVE;
 import static org.apache.seatunnel.shade.com.google.common.base.Preconditions.checkArgument;
@@ -79,6 +80,12 @@ public class CommonConfig implements Serializable {
                     .defaultValue(false)
                     .withDescription(" the iceberg case_sensitive");
 
+    public static final Option<String> KEY_CORE_SITE_PATH =
+            Options.key("core_site_path")
+                    .stringType()
+                    .noDefaultValue()
+                    .withDescription(" the hadoop core_site_path");
+
     private String catalogName;
     private IcebergCatalogType catalogType;
     private String uri;
@@ -86,17 +93,24 @@ public class CommonConfig implements Serializable {
     private String namespace;
     private String table;
     private boolean caseSensitive;
+    private String coreSitePath;
 
     public CommonConfig(Config pluginConfig) {
         String catalogType = checkArgumentNotNull(pluginConfig.getString(KEY_CATALOG_TYPE.key()));
         checkArgument(
-                HADOOP.getType().equals(catalogType) || HIVE.getType().equals(catalogType),
+                HADOOP.getType().equals(catalogType)
+                        || HIVE.getType().equals(catalogType)
+                        || ALLUXIO.getType().equals(catalogType),
                 "Illegal catalogType: " + catalogType);
 
         this.catalogType = IcebergCatalogType.valueOf(catalogType.toUpperCase());
         this.catalogName = checkArgumentNotNull(pluginConfig.getString(KEY_CATALOG_NAME.key()));
         if (pluginConfig.hasPath(KEY_URI.key())) {
             this.uri = checkArgumentNotNull(pluginConfig.getString(KEY_URI.key()));
+        }
+        if (pluginConfig.hasPath(KEY_CORE_SITE_PATH.key())) {
+            this.coreSitePath =
+                    checkArgumentNotNull(pluginConfig.getString(KEY_CORE_SITE_PATH.key()));
         }
         this.warehouse = checkArgumentNotNull(pluginConfig.getString(KEY_WAREHOUSE.key()));
         this.namespace = checkArgumentNotNull(pluginConfig.getString(KEY_NAMESPACE.key()));
