@@ -74,7 +74,7 @@ public class IcebergTableLoader implements Closeable, Serializable {
                         sourceConfig.getCatalogType(),
                         sourceConfig.getWarehouse(),
                         sourceConfig.getUri(),
-                        sourceConfig.getCoreSitePath());
+                        sourceConfig.getAlluxioConfig());
         return new IcebergTableLoader(
                 catalogFactory,
                 TableIdentifier.of(

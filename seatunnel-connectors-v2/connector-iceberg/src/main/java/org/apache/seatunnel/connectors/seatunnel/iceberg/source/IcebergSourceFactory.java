@@ -25,10 +25,10 @@ import org.apache.seatunnel.api.table.factory.TableSourceFactory;
 
 import com.google.auto.service.AutoService;
 
+import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.CommonConfig.ALLUXIO_CONFIG_PREFIX;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.CommonConfig.KEY_CASE_SENSITIVE;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.CommonConfig.KEY_CATALOG_NAME;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.CommonConfig.KEY_CATALOG_TYPE;
-import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.CommonConfig.KEY_CORE_SITE_PATH;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.CommonConfig.KEY_NAMESPACE;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.CommonConfig.KEY_TABLE;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.CommonConfig.KEY_URI;
@@ -56,7 +56,7 @@ public class IcebergSourceFactory implements TableSourceFactory {
                 .required(
                         KEY_CATALOG_NAME, KEY_CATALOG_TYPE, KEY_WAREHOUSE, KEY_NAMESPACE, KEY_TABLE)
                 .conditional(KEY_CATALOG_TYPE, HIVE, KEY_URI)
-                .conditional(KEY_CATALOG_TYPE, ALLUXIO, KEY_CORE_SITE_PATH)
+                .conditional(KEY_CATALOG_TYPE, ALLUXIO, ALLUXIO_CONFIG_PREFIX)
                 .optional(
                         TableSchemaOptions.SCHEMA,
                         KEY_CASE_SENSITIVE,

@@ -21,11 +21,14 @@ import org.apache.seatunnel.shade.com.typesafe.config.Config;
 
 import org.apache.seatunnel.api.configuration.Option;
 import org.apache.seatunnel.api.configuration.Options;
+import org.apache.seatunnel.common.config.CheckConfigUtil;
 
 import lombok.Getter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.IcebergCatalogType.ALLUXIO;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.IcebergCatalogType.HADOOP;
@@ -80,11 +83,11 @@ public class CommonConfig implements Serializable {
                     .defaultValue(false)
                     .withDescription(" the iceberg case_sensitive");
 
-    public static final Option<String> KEY_CORE_SITE_PATH =
-            Options.key("core_site_path")
-                    .stringType()
+    public static final Option<Map<String, String>> ALLUXIO_CONFIG_PREFIX =
+            Options.key("alluxio.config")
+                    .mapType()
                     .noDefaultValue()
-                    .withDescription(" the hadoop core_site_path");
+                    .withDescription("alluxio HA config");
 
     private String catalogName;
     private IcebergCatalogType catalogType;
@@ -93,7 +96,7 @@ public class CommonConfig implements Serializable {
     private String namespace;
     private String table;
     private boolean caseSensitive;
-    private String coreSitePath;
+    private Map<String, String> alluxioConfig;
 
     public CommonConfig(Config pluginConfig) {
         String catalogType = checkArgumentNotNull(pluginConfig.getString(KEY_CATALOG_TYPE.key()));
@@ -108,9 +111,15 @@ public class CommonConfig implements Serializable {
         if (pluginConfig.hasPath(KEY_URI.key())) {
             this.uri = checkArgumentNotNull(pluginConfig.getString(KEY_URI.key()));
         }
-        if (pluginConfig.hasPath(KEY_CORE_SITE_PATH.key())) {
-            this.coreSitePath =
-                    checkArgumentNotNull(pluginConfig.getString(KEY_CORE_SITE_PATH.key()));
+        if (CheckConfigUtil.isValidParam(pluginConfig, ALLUXIO_CONFIG_PREFIX.key())) {
+            alluxioConfig = new HashMap<>();
+            pluginConfig
+                    .getObject(ALLUXIO_CONFIG_PREFIX.key())
+                    .forEach(
+                            (key, value) -> {
+                                final String configKey = key.toLowerCase();
+                                alluxioConfig.put(configKey, value.unwrapped().toString());
+                            });
         }
         this.warehouse = checkArgumentNotNull(pluginConfig.getString(KEY_WAREHOUSE.key()));
         this.namespace = checkArgumentNotNull(pluginConfig.getString(KEY_NAMESPACE.key()));

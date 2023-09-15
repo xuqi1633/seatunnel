@@ -22,7 +22,6 @@ import org.apache.seatunnel.connectors.seatunnel.iceberg.config.IcebergCatalogTy
 import org.apache.seatunnel.connectors.seatunnel.iceberg.exception.IcebergConnectorException;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
 import org.apache.iceberg.CatalogProperties;
 import org.apache.iceberg.CatalogUtil;
 import org.apache.iceberg.catalog.Catalog;
@@ -44,19 +43,19 @@ public class IcebergCatalogFactory implements Serializable {
     private final IcebergCatalogType catalogType;
     private final String warehouse;
     private final String uri;
-    private final String coreSitePath;
+    private final Map<String, String> alluxioConfig;
 
     public IcebergCatalogFactory(
             @NonNull String catalogName,
             @NonNull IcebergCatalogType catalogType,
             @NonNull String warehouse,
             String uri,
-            String coreSitePath) {
+            Map<String, String> alluxioConfig) {
         this.catalogName = catalogName;
         this.catalogType = catalogType;
         this.warehouse = warehouse;
         this.uri = uri;
-        this.coreSitePath = coreSitePath;
+        this.alluxioConfig = alluxioConfig;
     }
 
     public Catalog create() {
@@ -67,7 +66,9 @@ public class IcebergCatalogFactory implements Serializable {
 
         switch (catalogType) {
             case ALLUXIO:
-                conf.addResource(new Path(coreSitePath));
+                if (alluxioConfig != null) {
+                    alluxioConfig.forEach(conf::set);
+                }
             case HADOOP:
                 return hadoop(catalogName, serializableConf, properties);
             case HIVE:

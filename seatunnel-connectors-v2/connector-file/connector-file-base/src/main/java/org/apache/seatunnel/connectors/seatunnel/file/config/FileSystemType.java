@@ -20,6 +20,7 @@ package org.apache.seatunnel.connectors.seatunnel.file.config;
 import java.io.Serializable;
 
 public enum FileSystemType implements Serializable {
+    ALLUXIO("AlluxioFile"),
     HDFS("HdfsFile"),
     LOCAL("LocalFile"),
     OSS("OssFile"),
