@@ -23,6 +23,9 @@ import org.apache.seatunnel.connectors.seatunnel.elasticsearch.config.SinkConfig
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** index config by seatunnel */
 @Data
 public class IndexInfo {
@@ -30,6 +33,7 @@ public class IndexInfo {
     private String index;
     private String type;
     private String[] primaryKeys;
+    private List<String> excludes;
     private String keyDelimiter;
 
     public IndexInfo(Config pluginConfig) {
@@ -42,6 +46,12 @@ public class IndexInfo {
                     pluginConfig
                             .getStringList(SinkConfig.PRIMARY_KEYS.key())
                             .toArray(new String[0]);
+        }
+        if (pluginConfig.hasPath(SinkConfig.EXCLUDES.key())) {
+            excludes = pluginConfig.getStringList(SinkConfig.EXCLUDES.key());
+            if (excludes == null) {
+                excludes = new ArrayList<>();
+            }
         }
         keyDelimiter = SinkConfig.KEY_DELIMITER.defaultValue();
         if (pluginConfig.hasPath(SinkConfig.KEY_DELIMITER.key())) {

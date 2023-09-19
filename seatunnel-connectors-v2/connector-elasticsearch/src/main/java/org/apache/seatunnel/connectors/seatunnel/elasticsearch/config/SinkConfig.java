@@ -44,6 +44,12 @@ public class SinkConfig {
                     .noDefaultValue()
                     .withDescription("Primary key fields used to generate the document `_id`");
 
+    public static final Option<List<String>> EXCLUDES =
+            Options.key("excludes")
+                    .listType(String.class)
+                    .noDefaultValue()
+                    .withDescription("exclude fields which is write to index");
+
     public static final Option<String> KEY_DELIMITER =
             Options.key("key_delimiter")
                     .stringType()

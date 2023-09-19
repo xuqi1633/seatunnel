@@ -35,6 +35,7 @@ import lombok.NonNull;
 
 import java.time.temporal.Temporal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -47,6 +48,7 @@ public class ElasticsearchRowSerializer implements SeaTunnelRowSerializer {
 
     private final IndexTypeSerializer indexTypeSerializer;
     private final Function<SeaTunnelRow, String> keyExtractor;
+    private final List<String> excludes;
 
     public ElasticsearchRowSerializer(
             ElasticsearchClusterInfo elasticsearchClusterInfo,
@@ -61,6 +63,7 @@ public class ElasticsearchRowSerializer implements SeaTunnelRowSerializer {
         this.keyExtractor =
                 KeyExtractor.createKeyExtractor(
                         seaTunnelRowType, indexInfo.getPrimaryKeys(), indexInfo.getKeyDelimiter());
+        excludes = indexInfo.getExcludes();
     }
 
     @Override
@@ -149,6 +152,9 @@ public class ElasticsearchRowSerializer implements SeaTunnelRowSerializer {
         Object[] fields = row.getFields();
         for (int i = 0; i < fieldNames.length; i++) {
             Object value = fields[i];
+            if (excludes.contains(fieldNames[i]) || value == null) {
+                continue;
+            }
             if (value instanceof Temporal) {
                 // jackson not support jdk8 new time api
                 doc.put(fieldNames[i], value.toString());
