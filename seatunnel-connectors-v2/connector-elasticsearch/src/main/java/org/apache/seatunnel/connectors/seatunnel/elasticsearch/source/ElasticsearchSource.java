@@ -68,11 +68,20 @@ public class ElasticsearchSource
             source = Arrays.asList(rowTypeInfo.getFieldNames());
         } else {
             source = pluginConfig.getStringList(SourceConfig.SOURCE.key());
+            boolean isAll = false;
+            if (source.size() == 1 && source.get(0).equals("*")) {
+                source.clear();
+                isAll = true;
+            }
             EsRestClient esRestClient = EsRestClient.createInstance(this.pluginConfig);
             Map<String, String> esFieldType =
                     esRestClient.getFieldTypeMapping(
                             pluginConfig.getString(SourceConfig.INDEX.key()), source);
             esRestClient.close();
+            if (isAll) {
+                esFieldType.put("_id", "text");
+                source.addAll(esFieldType.keySet());
+            }
             SeaTunnelDataType[] fieldTypes = new SeaTunnelDataType[source.size()];
             ElasticSearchDataTypeConvertor elasticSearchDataTypeConvertor =
                     new ElasticSearchDataTypeConvertor();
