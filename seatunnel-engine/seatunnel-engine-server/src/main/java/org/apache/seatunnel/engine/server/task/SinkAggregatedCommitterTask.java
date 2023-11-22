@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -296,14 +297,16 @@ public class SinkAggregatedCommitterTask<CommandInfoT, AggregatedCommitInfoT>
     @Override
     public void notifyCheckpointComplete(long checkpointId) throws Exception {
         List<AggregatedCommitInfoT> aggregatedCommitInfo = new ArrayList<>();
-        checkpointCommitInfoMap.forEach(
-                (key, value) -> {
-                    if (key > checkpointId) {
-                        return;
-                    }
-                    aggregatedCommitInfo.addAll(value);
-                    checkpointCommitInfoMap.remove(key);
-                });
+        Iterator<Map.Entry<Long, List<AggregatedCommitInfoT>>> iter =
+                checkpointCommitInfoMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<Long, List<AggregatedCommitInfoT>> entry = iter.next();
+            if (entry.getKey() > checkpointId) {
+                continue;
+            }
+            aggregatedCommitInfo.addAll(entry.getValue());
+            iter.remove();
+        }
         List<AggregatedCommitInfoT> commit = aggregatedCommitter.commit(aggregatedCommitInfo);
         tryClose(checkpointId);
         if (!CollectionUtils.isEmpty(commit)) {
