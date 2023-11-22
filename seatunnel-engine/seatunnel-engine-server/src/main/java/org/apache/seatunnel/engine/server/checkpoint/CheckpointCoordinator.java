@@ -432,10 +432,9 @@ public class CheckpointCoordinator {
 
             if (pendingCounter.get() > 0) {
                 scheduleTriggerPendingCheckpoint(checkpointType, 500L);
-                LOG.info("skip trigger checkpoint because there is already a pending checkpoint.");
                 return;
             }
-
+            LOG.info("trigger pending checkpoint.");
             CompletableFuture<PendingCheckpoint> pendingCheckpoint =
                     createPendingCheckpoint(currentTimestamp, checkpointType);
             startTriggerPendingCheckpoint(pendingCheckpoint);
