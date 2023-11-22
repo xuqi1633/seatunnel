@@ -30,6 +30,8 @@ import org.apache.iceberg.expressions.Expression;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.List;
+
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.source.enumerator.scan.IcebergStreamScanStrategy.FROM_LATEST_SNAPSHOT;
 
 @Getter
@@ -73,12 +75,20 @@ public class SourceConfig extends CommonConfig {
                     .defaultValue(FROM_LATEST_SNAPSHOT)
                     .withDescription(" the iceberg strategy of stream scanning");
 
+    public static final Option<List<String>> JSON_FIELD =
+            Options.key("json_field")
+                    .listType()
+                    .noDefaultValue()
+                    .withDescription(" the type of filed is json");
+
     private Long startSnapshotTimestamp;
     private Long startSnapshotId;
     private Long endSnapshotId;
 
     private Long useSnapshotId;
     private Long useSnapshotTimestamp;
+
+    private List<String> jsonField;
 
     private IcebergStreamScanStrategy streamScanStrategy = KEY_STREAM_SCAN_STRATEGY.defaultValue();
     private Expression filter;
@@ -90,6 +100,9 @@ public class SourceConfig extends CommonConfig {
         super(pluginConfig);
         if (pluginConfig.hasPath(KEY_START_SNAPSHOT_TIMESTAMP.key())) {
             this.startSnapshotTimestamp = pluginConfig.getLong(KEY_START_SNAPSHOT_TIMESTAMP.key());
+        }
+        if (pluginConfig.hasPath(JSON_FIELD.key())) {
+            this.jsonField = pluginConfig.getStringList(JSON_FIELD.key());
         }
         if (pluginConfig.hasPath(KEY_START_SNAPSHOT_ID.key())) {
             this.startSnapshotId = pluginConfig.getLong(KEY_START_SNAPSHOT_ID.key());

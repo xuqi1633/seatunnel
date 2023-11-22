@@ -29,6 +29,7 @@ import org.apache.seatunnel.api.source.SupportColumnProjection;
 import org.apache.seatunnel.api.source.SupportParallelism;
 import org.apache.seatunnel.api.table.catalog.CatalogTableUtil;
 import org.apache.seatunnel.api.table.catalog.schema.TableSchemaOptions;
+import org.apache.seatunnel.api.table.type.JsonType;
 import org.apache.seatunnel.api.table.type.SeaTunnelDataType;
 import org.apache.seatunnel.api.table.type.SeaTunnelRow;
 import org.apache.seatunnel.api.table.type.SeaTunnelRowType;
@@ -81,7 +82,19 @@ public class IcebergSource
         this.sourceConfig = SourceConfig.loadConfig(pluginConfig);
         this.tableSchema = loadIcebergSchema(sourceConfig);
         this.seaTunnelRowType = loadSeaTunnelRowType(tableSchema, pluginConfig);
+        processJsonTypeField(seaTunnelRowType, sourceConfig);
         this.projectedSchema = tableSchema.select(seaTunnelRowType.getFieldNames());
+    }
+
+    private void processJsonTypeField(
+            SeaTunnelRowType seaTunnelRowType, SourceConfig sourceConfig) {
+        List<String> jsonField = sourceConfig.getJsonField();
+        if (jsonField != null && !jsonField.isEmpty()) {
+            jsonField.forEach(
+                    x ->
+                            seaTunnelRowType.getFieldTypes()[seaTunnelRowType.indexOf(x)] =
+                                    JsonType.INSTANCE);
+        }
     }
 
     @SneakyThrows

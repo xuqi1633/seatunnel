@@ -17,12 +17,16 @@
 
 package org.apache.seatunnel.connectors.seatunnel.iceberg.data;
 
+import org.apache.seatunnel.shade.com.fasterxml.jackson.core.JsonProcessingException;
+
 import org.apache.seatunnel.api.table.type.ArrayType;
+import org.apache.seatunnel.api.table.type.JsonType;
 import org.apache.seatunnel.api.table.type.MapType;
 import org.apache.seatunnel.api.table.type.SeaTunnelDataType;
 import org.apache.seatunnel.api.table.type.SeaTunnelRow;
 import org.apache.seatunnel.api.table.type.SeaTunnelRowType;
 import org.apache.seatunnel.common.exception.CommonErrorCodeDeprecated;
+import org.apache.seatunnel.common.utils.JsonUtils;
 import org.apache.seatunnel.connectors.seatunnel.iceberg.exception.IcebergConnectorException;
 
 import org.apache.iceberg.Schema;
@@ -94,7 +98,13 @@ public class DefaultDeserializer implements Deserializer {
                 }
                 return LocalDateTime.class.cast(icebergValue);
             case STRING:
-                return String.class.cast(icebergValue);
+                try {
+                    return seaTunnelType instanceof JsonType
+                            ? JsonUtils.stringToJsonNode((String) icebergValue)
+                            : String.class.cast(icebergValue);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
             case FIXED:
                 return byte[].class.cast(icebergValue);
             case BINARY:

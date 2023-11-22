@@ -63,12 +63,11 @@ public class IcebergCatalogFactory implements Serializable {
         SerializableConfiguration serializableConf = new SerializableConfiguration(conf);
         Map<String, String> properties = new HashMap<>();
         properties.put(CatalogProperties.WAREHOUSE_LOCATION, warehouse);
-
+        if (alluxioConfig != null) {
+            alluxioConfig.forEach(conf::set);
+        }
         switch (catalogType) {
             case ALLUXIO:
-                if (alluxioConfig != null) {
-                    alluxioConfig.forEach(conf::set);
-                }
             case HADOOP:
                 return hadoop(catalogName, serializableConf, properties);
             case HIVE:

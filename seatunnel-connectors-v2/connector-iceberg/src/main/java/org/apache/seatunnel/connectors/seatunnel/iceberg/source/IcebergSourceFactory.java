@@ -35,6 +35,7 @@ import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.CommonCon
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.CommonConfig.KEY_WAREHOUSE;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.IcebergCatalogType.ALLUXIO;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.IcebergCatalogType.HIVE;
+import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.SourceConfig.JSON_FIELD;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.SourceConfig.KEY_END_SNAPSHOT_ID;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.SourceConfig.KEY_START_SNAPSHOT_ID;
 import static org.apache.seatunnel.connectors.seatunnel.iceberg.config.SourceConfig.KEY_START_SNAPSHOT_TIMESTAMP;
@@ -59,6 +60,7 @@ public class IcebergSourceFactory implements TableSourceFactory {
                 .conditional(KEY_CATALOG_TYPE, ALLUXIO, ALLUXIO_CONFIG_PREFIX)
                 .optional(
                         TableSchemaOptions.SCHEMA,
+                        JSON_FIELD,
                         KEY_CASE_SENSITIVE,
                         KEY_START_SNAPSHOT_TIMESTAMP,
                         KEY_START_SNAPSHOT_ID,
