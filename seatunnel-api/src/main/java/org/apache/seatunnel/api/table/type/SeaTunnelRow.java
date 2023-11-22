@@ -116,6 +116,8 @@ public final class SeaTunnelRow implements Serializable {
         }
         SqlType sqlType = dataType.getSqlType();
         switch (sqlType) {
+            case JSON:
+                return v.toString().length();
             case STRING:
                 return ((String) v).length();
             case BOOLEAN:
@@ -170,8 +172,8 @@ public final class SeaTunnelRow implements Serializable {
         switch (dataType.getSqlType()) {
             case STRING:
                 int s = 0;
-                for (String i : ((String[]) v)) {
-                    s += i.length();
+                for (Object i : ((Object[]) v)) {
+                    s += ((String) i).length();
                 }
                 return s;
             case BOOLEAN:

@@ -20,12 +20,14 @@ package org.apache.seatunnel.connectors.seatunnel.elasticsearch.serialize.source
 import org.apache.seatunnel.shade.com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.seatunnel.shade.com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.seatunnel.shade.com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.seatunnel.shade.com.fasterxml.jackson.databind.node.NullNode;
 import org.apache.seatunnel.shade.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.seatunnel.shade.com.fasterxml.jackson.databind.node.TextNode;
 
 import org.apache.seatunnel.api.table.type.ArrayType;
 import org.apache.seatunnel.api.table.type.BasicType;
 import org.apache.seatunnel.api.table.type.DecimalType;
+import org.apache.seatunnel.api.table.type.JsonType;
 import org.apache.seatunnel.api.table.type.LocalTimeType;
 import org.apache.seatunnel.api.table.type.MapType;
 import org.apache.seatunnel.api.table.type.PrimitiveByteArrayType;
@@ -112,11 +114,13 @@ public class DefaultSeaTunnelRowDeserializer implements SeaTunnelRowDeserializer
             for (int i = 0; i < rowTypeInfo.getTotalFields(); i++) {
                 fieldName = rowTypeInfo.getFieldName(i);
                 value = recursiveGet(rowRecord.getDoc(), fieldName);
-                if (value != null) {
+                if (value != null && !(value instanceof NullNode)) {
                     seaTunnelDataType = rowTypeInfo.getFieldType(i);
                     if (value instanceof TextNode) {
                         seaTunnelFields[i] =
                                 convertValue(seaTunnelDataType, ((TextNode) value).textValue());
+                    } else if (seaTunnelDataType instanceof JsonType) {
+                        seaTunnelFields[i] = value;
                     } else {
                         seaTunnelFields[i] = convertValue(seaTunnelDataType, value.toString());
                     }

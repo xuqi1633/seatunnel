@@ -19,6 +19,7 @@ package org.apache.seatunnel.connectors.seatunnel.elasticsearch.catalog;
 
 import org.apache.seatunnel.api.table.catalog.DataTypeConvertor;
 import org.apache.seatunnel.api.table.type.BasicType;
+import org.apache.seatunnel.api.table.type.JsonType;
 import org.apache.seatunnel.api.table.type.LocalTimeType;
 import org.apache.seatunnel.api.table.type.SeaTunnelDataType;
 import org.apache.seatunnel.api.table.type.SqlType;
@@ -44,6 +45,7 @@ public class ElasticSearchDataTypeConvertor implements DataTypeConvertor<String>
     public static final String HALF_FLOAT = "half_float";
     public static final String DOUBLE = "double";
     public static final String DATE = "date";
+    public static final String NESTED = "nested";
 
     @Override
     public SeaTunnelDataType<?> toSeaTunnelType(String field, String connectorDataType) {
@@ -79,6 +81,8 @@ public class ElasticSearchDataTypeConvertor implements DataTypeConvertor<String>
                 return BasicType.DOUBLE_TYPE;
             case DATE:
                 return LocalTimeType.LOCAL_DATE_TIME_TYPE;
+            case NESTED:
+                return JsonType.INSTANCE;
             default:
                 return BasicType.STRING_TYPE;
         }

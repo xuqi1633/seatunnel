@@ -17,25 +17,36 @@
 
 package org.apache.seatunnel.api.table.type;
 
-/** The sql type of {@link SeaTunnelDataType}. */
-public enum SqlType {
-    JSON,
-    ARRAY,
-    MAP,
-    STRING,
-    BOOLEAN,
-    TINYINT,
-    SMALLINT,
-    INT,
-    BIGINT,
-    FLOAT,
-    DOUBLE,
-    DECIMAL,
-    NULL,
-    BYTES,
-    DATE,
-    TIME,
-    TIMESTAMP,
-    ROW,
-    MULTIPLE_ROW;
+public class JsonType implements SeaTunnelDataType<JsonType> {
+    public static final JsonType INSTANCE = new JsonType();
+
+    private JsonType() {}
+
+    @Override
+    public Class<JsonType> getTypeClass() {
+        return JsonType.class;
+    }
+
+    @Override
+    public SqlType getSqlType() {
+        return SqlType.JSON;
+    }
+
+    @Override
+    public int hashCode() {
+        return JsonType.class.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        return obj instanceof JsonType;
+    }
+
+    @Override
+    public String toString() {
+        return SqlType.JSON.toString();
+    }
 }
